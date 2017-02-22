@@ -24,7 +24,7 @@ module GoogleApps
     # request_export returns the request ID on success or
     # the HTTP response object on failure.
     def request_export(username, document)
-      response = make_request(:post, export + "/#{username}", body: document, headers: {'content-type' => 'application/atom+xml'})
+      response = make_request(:post, export + "/#{username}", body: document.to_s, headers: {'content-type' => 'application/atom+xml'})
       export = create_doc(response.body, :export_response)
 
       export.find('//apps:property').inject(nil) do |request_id, node|
