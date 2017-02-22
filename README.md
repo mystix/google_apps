@@ -6,7 +6,7 @@
 ## What is this?
 
 This is another GoogleApps API Library.  
-* It is written for Ruby 1.9. 
+* It is written for Ruby 1.9.
 * It supports the following auth schemes:
   * Hybrid (OAuth1/OpenID)
   * OAuth2
@@ -94,13 +94,13 @@ require 'google_apps'
 ```
 
 ## <a id="clients" />Clients
-You have your choice of three clients depending on the auth scheme you intend to use. Once you've instantiated them, 
-they all share a common interface for API tasks. 
+You have your choice of three clients depending on the auth scheme you intend to use. Once you've instantiated them,
+they all share a common interface for API tasks.
 
 ### HybridAuthClient
-This scheme expects that you're acting on behalf of someone else's domain. This is probably the case if you're 
+This scheme expects that you're acting on behalf of someone else's domain. This is probably the case if you're
 building a website and want to have people install your app to their Google App account. In this case you'll want
-to login your user using OAuth, omniauth-google-apps is a find gem for doing this. The great part about using 
+to login your user using OAuth, omniauth-google-apps is a find gem for doing this. The great part about using
 this scheme is that you don't need the individual user's permission to the schemes you need to use, just the one-time
 domain administrator's approval and it offers a really smooth end-user experience.
 NOTE: The app id and app secret values should come from the page where your app is listed in the Google Apps Marketplace.
@@ -110,8 +110,8 @@ client = GoogleApps::HybridAuthClient.new(domain: 'example.com', google_app_id: 
 
 ### Oauth2Client
 This scheme is perfect for acting on behalf of an end-user when you don't have an app that gets installed & approved
-by a domain admin. The end-user experience is a little more bumy because he'll have to go through the extra step of 
-granting your app access to the data you need. 
+by a domain admin. The end-user experience is a little more bumy because he'll have to go through the extra step of
+granting your app access to the data you need.
 ```ruby
 client = GoogleApps::Oauth2Client.new(domain: 'example.com', token: 'SOME-OAUTH2-TOKEN')
 ```
@@ -185,7 +185,7 @@ users = client.get_users(start: 'lholcomb2', limit: 320)
 # Google actually returns records in batches so you will recieve the lowest multiple of 100 that covers your request.
 ```
 
-Google Apps uses public key encryption for mailbox exports and other audit functionality.  Adding a key is 
+Google Apps uses public key encryption for mailbox exports and other audit functionality.  Adding a key is
 fairly simple.
 
 ```ruby
@@ -211,8 +211,8 @@ Your export request will be placed in a queue and processed eventually.  Luckily
 
 ```ruby
 # Check Export Status
-client.export_status('username', <request_id>)
-client.export_ready?('username', <request_id>)
+status = client.export_status('username', <request_id>)
+client.export_ready? status
 ```
 
 Downloading the requested export is simple.
