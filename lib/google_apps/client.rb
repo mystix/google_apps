@@ -1,5 +1,6 @@
 require 'cgi'
 require 'openssl'
+require 'open-uri'
 
 module GoogleApps
   module Client
@@ -40,7 +41,7 @@ module GoogleApps
     # export_status will return the body of the HTTP response
     # from Google
     def export_status(username, id)
-      response = make_request(:get, URI(export + "/#{username}" + build_id(id)).to_s, headers: {'content-type' => 'application/atom+xml'})
+      response = make_request(:get, export + "/#{username}" + build_id(id), headers: {'content-type' => 'application/atom+xml'})
       create_doc(response.body, :export_status)
     end
 
@@ -73,6 +74,7 @@ module GoogleApps
     # not yet ready.
     def fetch_export(username, req_id, filename)
       export_status_doc = export_status(username, req_id)
+
       if export_ready?(export_status_doc)
         download_export(export_status_doc, filename).each_with_index { |url, index| url.gsub!(/.*/, "#{filename}#{index}") }
       else
@@ -85,8 +87,8 @@ module GoogleApps
     #
     # download 'url', 'save_file'
     def download(url, filename)
-      File.open(filename, "w") do |file|
-        file.puts(make_request(:get, url, headers: {'content-type' => 'application/atom+xml'}).body)
+      File.open(filename, 'wb') do |file|
+        file << open(url).read
       end
     end
 
@@ -193,10 +195,13 @@ module GoogleApps
       make_request(:post, migration + "/#{username}/mail", body: multi_part(properties.to_s, message), headers: headers)
     end
 
-    def method_missing(name, options = {})
+    def method_missing(name, obj = nil, options = {})
       super unless name.match /([a-z]*)_([a-z]*)/
+
       options[:headers] ||= {}
       options[:headers].merge!({'content-type' => 'application/atom+xml'})
+      options[:body] = obj.to_s
+
       case $1
         when "new", "add"
           response = make_request(:post, send($2), options)
@@ -267,7 +272,7 @@ module GoogleApps
 
     def download_export(export, filename)
       export_file_urls(export).each_with_index do |url, index|
-        download(url, filename + "#{index}")
+        download(url, filename + '_' + index.to_s.rjust(3, '0'))
       end
     end
 
