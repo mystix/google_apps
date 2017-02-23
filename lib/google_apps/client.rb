@@ -272,7 +272,9 @@ module GoogleApps
 
     def download_export(export, filename)
       export_file_urls(export).each_with_index do |url, index|
-        download(url, filename + '_' + index.to_s.rjust(3, '0'))
+        fn = File.join(File.dirname(filename), index.to_s.rjust(3, '0') + '_' + File.basename(filename))
+
+        download(url, fn)
       end
     end
 
